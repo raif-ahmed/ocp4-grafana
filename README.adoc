@@ -89,7 +89,7 @@ configMapGenerator:
 == Connect to Thanos
 We need to connect Grafana to the cluster monitoring Thanos instance in the openshift-monitoring namespace.
 
-* The first step we need to do is define a grafana-config configmap
+For this reason we defined a grafana-config configmap containing the details for a datasource which includes authentication token. 
 
 .xref:base/grafana/grafana-config-cm.yaml[base/grafana/grafana-config-cm.yaml]
 [source,yaml]
