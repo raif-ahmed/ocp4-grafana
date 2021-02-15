@@ -190,11 +190,13 @@ data:
   dashboardproviders.yaml: |
     apiVersion: 1
     providers:
-    - disableDeletion: false
-      editable: true
+    - name: default
+      disableDeletion: true
+      allowUiUpdates: false
+      editable: false
       folder: ""
-      name: default
       options:
-        path: /etc/grafana/dashboards/default
+        path: /etc/grafana/dashboards
+        foldersFromFilesStructure: true
       orgId: 1
       type: file
