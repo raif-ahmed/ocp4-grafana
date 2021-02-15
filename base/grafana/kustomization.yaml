@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+generatorOptions:
+ disableNameSuffixHash: true
+
+commonLabels:
+  app: grafana
+  app.kubernetes.io/name: grafana
+  app.kubernetes.io/part-of: grafana-app-dashboard
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+- grafana-config-cm.yaml
+- grafana-deployment.yaml
+- grafana-svc.yaml
+- grafana-sa.yaml
+- grafana-route.yaml
+- grafana-data-pvc.yaml
+- ocp-injected-certs.yml
+- oauth/cluster-role.yaml
+- oauth/cluster-role-binding.yaml
+- monitor/generate-grafana-ds-token-job-sa.yaml
+- monitor/generate-grafana-ds-token-job-role.yaml
+- monitor/generate-grafana-ds-token-job-role-binding.yaml
+- monitor/cluster-monitor-view-role-binding.yaml
+- monitor/generate-grafana-ds-token-job.yaml
+
+
+secretGenerator:
+#  python -c 'import os,base64; print base64.b64encode(os.urandom(16))'
+- literals:
+  - session_secret=vtmFnAI5UgevynW+45kQmg==
+  name: grafana-proxy-secret
+  type: Opaque
+  #https://access.redhat.com/terms-based-registry/
+- name: redhat-pull-secret
+  files:
+    - .dockerconfigjson=redhat-pull-config.json
+  type: kubernetes.io/dockerconfigjson

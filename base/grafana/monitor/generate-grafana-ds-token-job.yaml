@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: patch-grafana-ds
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      containers:
+        - image: registry.redhat.io/openshift4/ose-cli:v4.6
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "Patching grafana datasource with token for authentication to prometheus"
+              TOKEN=`oc serviceaccounts get-token grafana`
+              oc get cm grafana-config -o yaml |  sed "s/BEARER_TOKEN/${TOKEN}/" | oc apply -f -
+              oc delete pod -l deployment=grafana
+          imagePullPolicy: Always
+          name: patch-grafana-ds
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      serviceAccount: generate-grafana-ds-token-job-sa
+      serviceAccountName: generate-grafana-ds-token-job-sa
+      terminationGracePeriodSeconds: 30

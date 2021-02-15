@@ -1,0 +1,157 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      deployment: grafana
+  template:
+    metadata:
+      labels:
+        deployment: grafana
+    spec:
+      serviceAccountName: grafana
+      containers:
+        - name: grafana-proxy
+          image: oauth-proxy-image
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: OAUTH_ISSUER
+              valueFrom:
+                configMapKeyRef:
+                  name: oauth-issuer
+                  key: OAUTH_ISSUER
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 20m
+              memory: 32Mi
+          ports:
+            - containerPort: 8443
+              name: web
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: 8443
+              scheme: HTTPS
+              path: /oauth/healthz
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              port: 8443
+              scheme: HTTPS
+              path: /oauth/healthz
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          args:
+              - '-provider=openshift'
+              - '-pass-basic-auth=false'
+              - '-https-address=:8443'
+              - '-http-address='
+              - '-email-domain=*'
+              - '-upstream=http://localhost:3000'
+              - '-openshift-sar={"resource": "namespaces", "verb": "get", "resourceName": "$(NAMESPACE)", "namespace": "$(NAMESPACE)"}'
+              - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get"}}'
+              - '-tls-cert=/etc/tls/private/tls.crt'
+              - '-tls-key=/etc/tls/private/tls.key'
+              - '-client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token'
+              - '-cookie-secret-file=/etc/proxy/secrets/session_secret'
+              - '-openshift-service-account=grafana'
+              - '-openshift-ca=/etc/pki/tls/cert.pem'
+              - '-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+              - '-openshift-ca=/etc/proxy/configmaps/ocp-injected-certs/ca-bundle.crt'
+            #  - '-ssl-insecure-skip-verify=true'
+              - '-request-logging=false'
+
+          volumeMounts:
+            - mountPath: /etc/tls/private
+              name: grafana-tls
+            - mountPath: /etc/proxy/secrets
+              name: grafana-proxy-secret
+            - mountPath: /etc/proxy/configmaps/ocp-injected-certs
+              name: ocp-injected-certs
+        - name: grafana
+          image: grafana-image
+          args:
+            - -config=/etc/grafana/grafana.ini
+          env:
+            - name: GF_INSTALL_PLUGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: grafana-config
+                  key: plugins
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 60
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 20m
+              memory: 32Mi
+          ports:
+            - name: grafana-http
+              containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
+            - name: grafana-tls
+              mountPath: /etc/tls/private
+            - name: grafana-proxy-secret
+              mountPath: /etc/proxy/secrets
+
+            - name:  grafana-config
+              mountPath: "/etc/grafana/grafana.ini"
+              subPath: grafana.ini
+            - name:  grafana-config
+              mountPath: "/etc/grafana/provisioning/datasources/datasources.yaml"
+              subPath: datasources.yaml
+            - name:  grafana-config
+              mountPath: "/etc/grafana/provisioning/dashboards/dashboardproviders.yaml"
+              subPath: dashboardproviders.yaml
+
+      volumes:
+        - name: grafana-config
+          configMap:
+            name: grafana-config
+        - name: ocp-injected-certs
+          configMap:
+            name: ocp-injected-certs
+        - name: grafana-proxy-secret
+          secret:
+            secretName: grafana-proxy-secret
+        - name: grafana-tls
+          secret:
+            secretName: grafana-tls
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-data-pvc
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 5
+  progressDeadlineSeconds: 600

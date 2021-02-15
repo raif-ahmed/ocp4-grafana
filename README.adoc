@@ -1,0 +1,156 @@
+= README
+
+This is a deployment of Grafana on OpenShift 4.
+
+The Grafana dashboard is deployed in its own project (grafana-app-dashboard).
+
+
+== Pull secret
+To pull images from registry.redhat.io you need to create a pull secret (redhat-pull-secret) in the monitoring (grafana-app-dashboard) project.
+
+.xref:base/grafana/redhat-pull-config.json[base/grafana/redhat-pull-config.json]
+[source,json]
+----
+{
+  "auths":{
+    "quay.io": {
+        "auth": "...",
+        "email": ""
+    },
+    "registry.redhat.io": {
+      "auth": "..."
+    }
+  }
+}
+----
+
+You need this to pull the image (registry.redhat.io/openshift4/ose-oauth-proxy:latest).
+
+
+Please use https://access.redhat.com/terms-based-registry/[] to create the Registry Service Accounts for the pull secret.
+
+For more information, please refer to https://access.redhat.com/RegistryAuthentication[Red Hat Container Registry Authentication]
+
+
+== Configure OAuth server
+
+Applications running in OpenShift Container Platform might have to discover information about the built-in OAuth server.
+For more info. please refer to https://docs.openshift.com/container-platform/4.6/authentication/configuring-internal-oauth.html#oauth-server-metadata_configuring-internal-oauth[OAuth server metadata]
+
+To configure the OAUTH_ISSUER, run the following command
+
+[source,bash]
+----
+  oc run --rm -i -t box --image=registry.redhat.io/ubi8-minimal --restart=Never -- curl https://openshift.default.svc/.well-known/oauth-authorization-server --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+----
+
+The command returns a JSON file like.
+
+[source,json]
+----
+{
+  "issuer": "https://oauth-openshift.apps.cluster-1d9e.gcp.testdrive.openshift.com",
+  "authorization_endpoint": "https://oauth-openshift.apps.cluster-1d9e.gcp.testdrive.openshift.com/oauth/authorize",
+  "token_endpoint": "https://oauth-openshift.apps.cluster-1d9e.gcp.testdrive.openshift.com/oauth/token",
+  "scopes_supported": [
+    "user:check-access",
+    "user:full",
+    "user:info",
+    "user:list-projects",
+    "user:list-scoped-projects"
+  ],
+  "response_types_supported": [
+    "code",
+    "token"
+  ],
+  "grant_types_supported": [
+    "authorization_code",
+    "implicit"
+  ],
+  "code_challenge_methods_supported": [
+    "plain",
+    "S256"
+  ]
+}
+----
+
+then modify xref:overlays/openshift/kustomization.yaml[overlays/openshift/kustomization.yaml], like following example
+
+.xref:overlays/openshift/kustomization.yaml[overlays/openshift/kustomization.yaml]
+[source,yaml]
+----
+configMapGenerator:
+- literals:
+  - OAUTH_ISSUER=https://oauth-openshift.apps.cluster-1d9e.gcp.testdrive.openshift.com <1>
+  name: oauth-issuer
+----
+<1> Please use the field 'issuer' as OAUTH_ISSUER
+
+== Connect to Thanos
+we need to setup the plumbing to connect Grafana to the cluster monitoring Thanos instance in the openshift-monitoring namespace.
+
+The first step we need to do is define a grafana-config configmap
+
+.xref:base/grafana/grafana-config-cm.yaml[base/grafana/grafana-config-cm.yaml]
+[source,yaml]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+data:
+...
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - access: proxy
+      editable: true
+      isDefault: true
+      jsonData:
+        httpHeaderName1: 'Authorization'
+        timeInterval: 5s
+        tlsSkipVerify: true
+      name: Prometheus
+      secureJsonData:
+        httpHeaderValue1: 'Bearer BEARER_TOKEN' <1>
+      type: prometheus
+      url: 'https://thanos-querier.openshift-monitoring.svc.cluster.local:9091'
+
+...
+----
+<1> bearer token, to connect to thanos
+
+this token comes from the grafana serviceaccount and can only be determined at runtime.
+To manage this, we deploy a kubernetes job in order to patch the configmap and recreate the Pod with the appropriate token.
+
+.xref:base/grafana/monitor/generate-grafana-ds-token-job.yaml[base/grafana/monitor/generate-grafana-ds-token-job.yaml]
+[source,yaml]
+----
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: patch-grafana-ds
+spec:
+  template:
+    spec:
+      containers:
+        - image: registry.redhat.io/openshift4/ose-cli:v4.6
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "Patching grafana datasource with token for authentication to prometheus"
+              TOKEN=`oc serviceaccounts get-token grafana`
+              oc get cm grafana-config -o yaml |  sed "s/BEARER_TOKEN/${TOKEN}/" | oc apply -f -
+              oc delete pod -l deployment=grafana
+          imagePullPolicy: Always
+          name: patch-grafana-ds
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      serviceAccount: generate-grafana-ds-token-job-sa
+      serviceAccountName: generate-grafana-ds-token-job-sa
+      terminationGracePeriodSeconds: 30
+----
+
+This job runs using a special ServiceAccount which gives the job just enough access to retrieve the token, patch the configmap, and delete Pod.

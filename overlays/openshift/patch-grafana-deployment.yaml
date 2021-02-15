@@ -1,0 +1,26 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: grafana
+spec:
+  template:
+    spec:
+      containers:
+        - name: grafana-proxy
+          image: registry.redhat.io/openshift4/ose-oauth-proxy:v4.6
+        - name: grafana
+          image: grafana/grafana:latest
+          volumeMounts:
+            - mountPath: /var/lib/grafana/dashboards/fuse.json
+              name: dashboard-fuse
+              subPath: fuse.json
+            - mountPath: /var/lib/grafana/dashboards/amq.json
+              name: dashboard-amq
+              subPath: amq.json
+      volumes:
+        - name: dashboard-fuse
+          configMap:
+            name: dashboard-fuse
+        - name: dashboard-amq
+          configMap:
+            name: dashboard-amq

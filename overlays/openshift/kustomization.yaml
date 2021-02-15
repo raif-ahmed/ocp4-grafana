@@ -1,0 +1,57 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+generatorOptions:
+ disableNameSuffixHash: true
+
+namespace: grafana-app-dashboard
+
+bases:
+- ../../base
+
+resources:
+  - namespace.yaml
+
+configMapGenerator:
+- files:
+    - dashboards/fuse.json
+  name: dashboard-fuse
+- files:
+    - dashboards/amq.json
+  name: dashboard-amq
+
+
+# use the field 'issuer' as OAUTH_ISSUER from following command
+# oc run --rm -i -t box --image=registry.redhat.io/ubi8-minimal --restart=Never -- curl https://openshift.default.svc/.well-known/oauth-authorization-server --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+- literals:
+  - OAUTH_ISSUER=https://oauth-openshift.apps.cluster-1d9e.gcp.testdrive.openshift.com
+  name: oauth-issuer
+- files:
+    - app-rules.yaml
+  name: app-rules
+
+# I'm changing the names to match the namespace name
+patches:
+- target:
+    kind: ClusterRoleBinding
+    name: grafana-proxy
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-dashboard-proxy
+    - op: replace
+      path: /subjects/0/namespace
+      value: grafana-app-dashboard
+- target:
+    kind: ClusterRoleBinding
+    name: grafana-cluster-monitoring-view
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-dashboard-cluster-monitoring-view
+    - op: replace
+      path: /subjects/0/namespace
+      value: grafana-app-dashboard
+
+patchesStrategicMerge:
+- patch-grafana-deployment.yaml
