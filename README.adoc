@@ -154,3 +154,12 @@ spec:
 ----
 
 This job runs using a special ServiceAccount which gives the job just enough access to retrieve the token, patch the configmap, and delete Pod.
+
+== Deploy
+
+To use the Kustomize to deploy the grafana, then
+
+[source,bash]
+----
+kustomize build overlays/openshift  |oc apply -f -
+----
