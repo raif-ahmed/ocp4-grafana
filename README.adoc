@@ -87,7 +87,7 @@ configMapGenerator:
 <1> Please use the field 'issuer' as OAUTH_ISSUER
 
 == Connect to Thanos
-We need connect Grafana to the cluster monitoring Thanos instance in the openshift-monitoring namespace.
+We need to connect Grafana to the cluster monitoring Thanos instance in the openshift-monitoring namespace.
 
 * The first step we need to do is define a grafana-config configmap
 
