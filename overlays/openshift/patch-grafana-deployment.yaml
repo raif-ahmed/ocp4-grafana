@@ -9,7 +9,8 @@ spec:
         - name: grafana-proxy
           image: registry.redhat.io/openshift4/ose-oauth-proxy:v4.6
         - name: grafana
-          image: grafana/grafana:latest
+          #image: grafana/grafana:latest
+          image: registry.redhat.io/openshift4/ose-grafana:v4.6
           volumeMounts:
             - mountPath: /etc/grafana/dashboards/pvc.json
               name: dashboard-pvc

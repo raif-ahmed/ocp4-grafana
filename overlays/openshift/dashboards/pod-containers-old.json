@@ -12,11 +12,11 @@
       }
     ]
   },
-  "editable": false,
+  "editable": true,
   "gnetId": 7624,
   "graphTooltip": 1,
-  "id": 1,
-  "iteration": 1613502053133,
+  "id": 3,
+  "iteration": 1613474332609,
   "links": [],
   "panels": [
     {
@@ -79,7 +79,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.0",
+      "pluginVersion": "7.4.1",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -209,7 +209,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.0",
+      "pluginVersion": "7.4.1",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -325,7 +325,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.0",
+      "pluginVersion": "7.4.1",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -453,7 +453,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.0",
+      "pluginVersion": "7.4.1",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -572,7 +572,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.0",
+      "pluginVersion": "7.4.1",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -708,7 +708,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.0",
+      "pluginVersion": "7.4.1",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -832,7 +832,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.0",
+      "pluginVersion": "7.4.1",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -970,7 +970,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.0",
+      "pluginVersion": "7.4.1",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1095,7 +1095,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.2.0",
+      "pluginVersion": "7.4.1",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1169,10 +1169,490 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      },
+      "id": 17,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "prometheus",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 2
+          },
+          "id": 5,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sort": "max",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{app=\"$container\", kubernetes_namespace=\"$namespace\"}[30s])) by (app,kubernetes_namespace,le))",
+              "intervalFactor": 1,
+              "legendFormat": "native | 0.99",
+              "refId": "A",
+              "step": 1
+            },
+            {
+              "expr": "histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket{app=\"$container\", kubernetes_namespace=\"$namespace\"}[30s])) by (app,kubernetes_namespace,le))",
+              "intervalFactor": 1,
+              "legendFormat": "native | 0.90",
+              "refId": "B",
+              "step": 1
+            },
+            {
+              "expr": "histogram_quantile(0.5, sum(rate(http_request_duration_seconds_bucket{app=\"$container\", kubernetes_namespace=\"$namespace\"}[30s])) by (app,kubernetes_namespace,le))",
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "native | 0.50",
+              "refId": "C",
+              "step": 1
+            },
+            {
+              "expr": "histogram_quantile(0.99, sum(rate(nginx_http_request_duration_seconds_bucket{app=\"$container\", kubernetes_namespace=\"$namespace\"}[30s])) by (app,kubernetes_namespace,le))",
+              "intervalFactor": 1,
+              "legendFormat": "nginx | 0.99",
+              "refId": "D",
+              "step": 1
+            },
+            {
+              "expr": "histogram_quantile(0.9, sum(rate(nginx_http_request_duration_seconds_bucket{app=\"$container\", kubernetes_namespace=\"$namespace\"}[30s])) by (app,kubernetes_namespace,le))",
+              "intervalFactor": 1,
+              "legendFormat": "nginx | 0.90",
+              "refId": "E",
+              "step": 1
+            },
+            {
+              "expr": "histogram_quantile(0.5, sum(rate(nginx_http_request_duration_seconds_bucket{app=\"$container\", kubernetes_namespace=\"$namespace\"}[30s])) by (app,kubernetes_namespace,le))",
+              "intervalFactor": 1,
+              "legendFormat": "nginx | 0.50",
+              "refId": "F",
+              "step": 1
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Response time percentiles",
+          "tooltip": {
+            "msResolution": true,
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "s",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "title": "Response time",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "id": 16,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "prometheus",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 1
+          },
+          "id": 3,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sort": "avg",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(irate(http_requests_total{app=\"$container\", handler!=\"prometheus\", kubernetes_namespace=\"$namespace\"}[30s])) by (kubernetes_namespace,app,code)",
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "native | {{code}}",
+              "refId": "A",
+              "step": 10
+            },
+            {
+              "expr": "sum(irate(nginx_http_requests_total{app=\"$container\", kubernetes_namespace=\"$namespace\"}[30s])) by (kubernetes_namespace,app,status)",
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "nginx | {{status}}",
+              "refId": "B",
+              "step": 10
+            },
+            {
+              "expr": "sum(irate(haproxy_backend_http_responses_total{app=\"$container\", kubernetes_namespace=\"$namespace\"}[30s])) by (app,kubernetes_namespace,code)",
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "haproxy | {{code}}",
+              "refId": "C",
+              "step": 10
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Request rate",
+          "tooltip": {
+            "msResolution": true,
+            "shared": false,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ops",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "prometheus",
+          "fill": 1,
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
+          "id": 15,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sort": "avg",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(irate(haproxy_backend_http_responses_total{app=\"$container\", kubernetes_namespace=\"$namespace\",code=\"5xx\"}[30s])) by (app,kubernetes_namespace) / sum(irate(haproxy_backend_http_responses_total{app=\"$container\", kubernetes_namespace=\"$namespace\"}[30s])) by (app,kubernetes_namespace)",
+              "interval": "",
+              "intervalFactor": 2,
+              "legendFormat": "haproxy",
+              "refId": "A",
+              "step": 20
+            },
+            {
+              "expr": "sum(irate(http_requests_total{app=\"$container\", handler!=\"prometheus\", kubernetes_namespace=\"$namespace\", code=~\"5[0-9]+\"}[30s])) by (kubernetes_namespace,app) / sum(irate(http_requests_total{app=\"$container\", handler!=\"prometheus\", kubernetes_namespace=\"$namespace\"}[30s])) by (kubernetes_namespace,app)",
+              "intervalFactor": 2,
+              "legendFormat": "native",
+              "refId": "B",
+              "step": 20
+            },
+            {
+              "expr": "sum(irate(nginx_http_requests_total{app=\"$container\", kubernetes_namespace=\"$namespace\", status=~\"5[0-9]+\"}[30s])) by (kubernetes_namespace,app) / sum(irate(nginx_http_requests_total{app=\"$container\", kubernetes_namespace=\"$namespace\"}[30s])) by (kubernetes_namespace,app)",
+              "intervalFactor": 2,
+              "legendFormat": "nginx",
+              "refId": "C",
+              "step": 20
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Error rate",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percentunit",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "title": "Request rate",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 42
+      },
+      "id": 19,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "prometheus",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "gridPos": {
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 2
+          },
+          "id": 12,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": false,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sort": "avg",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "elasticsearch-logging-data-20170207a (logging) - system",
+              "color": "#BF1B00"
+            },
+            {
+              "alias": "elasticsearch-logging-data-20170207a (logging) - user",
+              "color": "#508642"
+            }
+          ],
+          "spaceLength": 10,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(irate(container_cpu_system_seconds_total{container=\"$container\", namespace=\"$namespace\"}[30s])) by (namespace,container) / sum(container_spec_cpu_shares{container=\"$container\", namespace=\"$namespace\"} / 1024) by (namespace,container)",
+              "intervalFactor": 2,
+              "legendFormat": "system",
+              "refId": "C",
+              "step": 10
+            },
+            {
+              "expr": "sum(irate(container_cpu_user_seconds_total{container=\"$container\", namespace=\"$namespace\"}[30s])) by (namespace,container) / sum(container_spec_cpu_shares{container=\"$container\", namespace=\"$namespace\"} / 1024) by (namespace,container)",
+              "interval": "",
+              "intervalFactor": 2,
+              "legendFormat": "user",
+              "refId": "B",
+              "step": 10
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Cpu usage (relative to request)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percentunit",
+              "label": "",
+              "logBase": 1,
+              "max": "1",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "title": "Usage relative to request",
+      "type": "row"
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 26,
+  "schemaVersion": 27,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -1180,19 +1660,24 @@
       {
         "allValue": ".+",
         "current": {
-          "selected": false,
-          "text": "grafana-app-dashboard",
-          "value": "grafana-app-dashboard"
+          "selected": true,
+          "text": "openshift-authentication-operator",
+          "value": "openshift-authentication-operator"
         },
         "datasource": "Prometheus",
         "definition": "",
+        "description": null,
+        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": null,
         "multi": false,
         "name": "namespace",
         "options": [],
-        "query": "label_values(container_memory_usage_bytes{namespace=~\".+\",container!=\"POD\"},namespace)",
+        "query": {
+          "query": "label_values(container_memory_usage_bytes{namespace=~\".+\",container!=\"POD\"},namespace)",
+          "refId": "Prometheus-namespace-Variable-Query"
+        },
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1206,19 +1691,24 @@
       {
         "allValue": ".+",
         "current": {
-          "selected": true,
-          "text": "grafana",
-          "value": "grafana"
+          "selected": false,
+          "text": "authentication-operator",
+          "value": "authentication-operator"
         },
         "datasource": "Prometheus",
-        "definition": "",
+        "definition": "label_values(container_memory_usage_bytes{namespace=~\"$namespace\",container!=\"POD\"},container)",
+        "description": null,
+        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": null,
         "multi": false,
         "name": "container",
         "options": [],
-        "query": "label_values(container_memory_usage_bytes{namespace=~\"$namespace\",container!=\"POD\"},container)",
+        "query": {
+          "query": "label_values(container_memory_usage_bytes{namespace=~\"$namespace\",container!=\"POD\"},container)",
+          "refId": "StandardVariableQuery"
+        },
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
