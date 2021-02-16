@@ -14,12 +14,14 @@ resources:
 
 configMapGenerator:
 - files:
-    - dashboards/fuse.json
-  name: dashboard-fuse
-- files:
     - dashboards/amq.json
   name: dashboard-amq
-
+- files:
+    - dashboards/pvc.json
+  name: dashboard-pvc
+- files:
+    - dashboards/pod-containers.json
+  name: dashboard-pod-containers
 
 # use the field 'issuer' as OAUTH_ISSUER from following command
 # oc run --rm -i -t box --image=registry.redhat.io/ubi8-minimal --restart=Never -- curl https://openshift.default.svc/.well-known/oauth-authorization-server --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt

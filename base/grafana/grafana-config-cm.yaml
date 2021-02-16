@@ -170,6 +170,13 @@ data:
     enabled           = true
     interval_seconds  = 30
 
+    #################################### Folder Paths ############
+    [paths]
+    data = /var/lib/grafana
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
+
   datasources.yaml: |
     apiVersion: 1
     datasources:

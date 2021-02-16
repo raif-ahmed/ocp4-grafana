@@ -11,16 +11,22 @@ spec:
         - name: grafana
           image: grafana/grafana:latest
           volumeMounts:
-            - mountPath: /var/lib/grafana/dashboards/fuse.json
-              name: dashboard-fuse
-              subPath: fuse.json
-            - mountPath: /var/lib/grafana/dashboards/amq.json
+            - mountPath: /etc/grafana/dashboards/pvc.json
+              name: dashboard-pvc
+              subPath: pvc.json
+            - mountPath: /etc/grafana/dashboards/pod-containers.json
+              name: dashboard-pod-containers
+              subPath: pod-containers.json
+            - mountPath: /etc/grafana/dashboards/amq.json
               name: dashboard-amq
               subPath: amq.json
       volumes:
-        - name: dashboard-fuse
+        - name: dashboard-pvc
           configMap:
-            name: dashboard-fuse
+            name: dashboard-pvc
         - name: dashboard-amq
           configMap:
             name: dashboard-amq
+        - name: dashboard-pod-containers
+          configMap:
+            name: dashboard-pod-containers
