@@ -25,7 +25,6 @@ resources:
 - monitor/generate-grafana-ds-token-job-role-binding.yaml
 - monitor/cluster-monitor-view-role-binding.yaml
 - monitor/generate-grafana-ds-token-job.yaml
-- namespace-groups.yaml
 - groups-role-binding.yaml
 
 

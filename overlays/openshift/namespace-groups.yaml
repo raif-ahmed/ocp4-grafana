@@ -3,13 +3,13 @@ kind: Group
 metadata:
   name: namespace-admins
 ## Please add your users here
-# users:
-#   - admin
+users:
+  - admin
 ---
 apiVersion: user.openshift.io/v1
 kind: Group
 metadata:
   name: namespace-users
 ## Please add your users here
-# users:
-#   - normal-user
+users:
+  - user1
