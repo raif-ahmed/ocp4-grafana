@@ -87,12 +87,12 @@ spec:
           image: grafana-image
           args:
             - -config=/etc/grafana/grafana.ini
-          env:
-            - name: GF_INSTALL_PLUGINS
-              valueFrom:
-                configMapKeyRef:
-                  name: grafana-config
-                  key: plugins
+          # env:
+          #   - name: GF_INSTALL_PLUGINS
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: grafana-config
+          #         key: plugins
           livenessProbe:
             failureThreshold: 10
             httpGet:

@@ -32,7 +32,8 @@ configMapGenerator:
     - app-rules.yaml
   name: app-rules
 
-# I'm changing the names to match the namespace name
+# I'm changing the names to match the namespace name.
+# Please change "grafana-app-dashboard" prefix to match your namespace name
 patches:
 - target:
     kind: ClusterRoleBinding
@@ -54,6 +55,34 @@ patches:
     - op: replace
       path: /subjects/0/namespace
       value: grafana-app-dashboard
+- target:
+    kind: Group
+    name: namespace-admins
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-dashboard-admins
+- target:
+    kind: Group
+    name: namespace-users
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-dashboard-users
+- target:
+    kind: RoleBinding
+    name: namespace-admins-rb
+  patch: |-
+    - op: replace
+      path: /subjects/0/name
+      value: grafana-app-dashboard-admins
+- target:
+    kind: RoleBinding
+    name: namespace-users-rb
+  patch: |-
+    - op: replace
+      path: /subjects/0/name
+      value: grafana-app-dashboard-users
 
 patchesStrategicMerge:
 - patch-grafana-deployment.yaml
