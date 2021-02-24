@@ -12,22 +12,16 @@ spec:
           #image: grafana/grafana:latest
           image: registry.redhat.io/openshift4/ose-grafana:v4.6
           volumeMounts:
-            - mountPath: /etc/grafana/dashboards/pvc.json
-              name: dashboard-pvc
-              subPath: pvc.json
-            - mountPath: /etc/grafana/dashboards/pod-containers.json
-              name: dashboard-pod-containers
-              subPath: pod-containers.json
-            - mountPath: /etc/grafana/dashboards/amq.json
-              name: dashboard-amq
-              subPath: amq.json
+            - mountPath: /etc/grafana/dashboards
+              name: dashboards
+            #   subPath: pvc.json
+            # - mountPath: /etc/grafana/dashboards/pod-containers.json
+            #   name: dashboard-pod-containers
+            #   subPath: pod-containers.json
+            # - mountPath: /etc/grafana/dashboards/amq.json
+            #   name: dashboard-amq
+            #   subPath: amq.json
       volumes:
-        - name: dashboard-pvc
+        - name: dashboards
           configMap:
-            name: dashboard-pvc
-        - name: dashboard-amq
-          configMap:
-            name: dashboard-amq
-        - name: dashboard-pod-containers
-          configMap:
-            name: dashboard-pod-containers
+            name: dashboards
