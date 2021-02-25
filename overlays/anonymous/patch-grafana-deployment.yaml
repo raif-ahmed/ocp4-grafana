@@ -7,8 +7,8 @@ spec:
     spec:
       containers:
         - name: grafana
-          image: grafana/grafana:latest
-          #image: registry.redhat.io/openshift4/ose-grafana:v4.6
+          # image: grafana/grafana:latest
+          image: registry.redhat.io/openshift4/ose-grafana:v4.6
           volumeMounts:
             - mountPath: /etc/grafana/dashboards
               name: dashboards
