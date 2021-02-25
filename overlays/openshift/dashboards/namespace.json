@@ -17,8 +17,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1614165235625,
+  "iteration": 1614174642488,
   "links": [],
   "panels": [
     {
@@ -249,8 +248,8 @@
         "allValue": null,
         "current": {
           "selected": true,
-          "text": "$namespace",
-          "value": "$namespace"
+          "text": "argocd",
+          "value": "argocd"
         },
         "datasource": "Prometheus",
         "definition": "label_values(namespace)",
@@ -264,7 +263,7 @@
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 5,
         "tagValuesQuery": "",
         "tags": [],
         "tagsQuery": "",

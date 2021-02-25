@@ -18,7 +18,7 @@ configMapGenerator:
     - dashboards/amq.json
     - dashboards/pod-containers.json
     - dashboards/pvc.json
-#    - dashboards/pod-containers-namespace.json
+    - dashboards/namespace.json
   name: dashboards
 # use the field 'issuer' as OAUTH_ISSUER from following command
 # oc run --rm -i -t box --image=registry.redhat.io/ubi8-minimal --restart=Never -- curl https://openshift.default.svc/.well-known/oauth-authorization-server --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
