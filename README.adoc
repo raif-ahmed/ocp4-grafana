@@ -125,7 +125,7 @@ Please use https://access.redhat.com/terms-based-registry/[] to create the Regis
 For more information, please refer to https://access.redhat.com/RegistryAuthentication[Red Hat Container Registry Authentication]
 
 
-== Configure OAuth server
+== Configure OAuth server Url
 
 Applications running in OpenShift Container Platform might have to discover information about the built-in OAuth server.
 For more info. please refer to https://docs.openshift.com/container-platform/4.6/authentication/configuring-internal-oauth.html#oauth-server-metadata_configuring-internal-oauth[OAuth server metadata]
