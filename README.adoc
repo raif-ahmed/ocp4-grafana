@@ -2,7 +2,100 @@
 
 This is a deployment of Grafana on OpenShift 4.
 
+= Grafana integrated with OpenShift OAuth
+
+The idea is take advantage of Grafana https://grafana.com/docs/grafana/latest/auth/auth-proxy/[Auth Proxy Authentication]
+and use https://catalog.redhat.com/software/containers/openshift4/ose-oauth-proxy/5cdb2133bed8bd5717d5ae64[OpenShift Oauth Proxy] as a HTTP reverse proxy to handle authentication.
+
+== What is OpenShift Oauth Proxy
+A reverse proxy that provides authentication and authorization to an OpenShift OAuth server
+or Kubernetes master supporting the 1.6+ remote authorization endpoints to validate access to content.
+It is intended for use within OpenShift clusters to make it easy to run both end-user and infrastructure services
+that don't provide their own authentication.
+
+== What is Grafana Auth Proxy Authentication
+It allows You to configure Grafana to let a HTTP reverse proxy handle authentication.
+Popular web servers have a very extensive list of pluggable authentication modules, and any of them can be used with the AuthProxy feature. Below we detail the configuration options for auth proxy.
+
+.overlays/oauth/grafana-oauth-config-cm.yaml
+[source,ini]
+----
+[auth.proxy]
+enabled = true
+#header_name = X-WEBAUTH-USER
+#header_name = REMOTE_USER
+header_name = X-Forwarded-User
+header_property = username
+auto_sign_up = true
+----
+
 The Grafana dashboard is deployed in its own project (grafana-app-dashboard).
+In case you want to change the project name, please change the following
+
+.overlays/oauth/kustomization.yaml
+[source,yaml]
+----
+...
+
+namespace: grafana-app-dashboard <1>
+
+# I'm changing the names to match the namespace name.
+# Please change "grafana-app-dashboard" prefix to match your namespace name
+patches: <2>
+- target:
+    kind: ClusterRoleBinding
+    name: grafana-proxy
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-dashboard-proxy
+    - op: replace
+      path: /subjects/0/namespace
+      value: grafana-app-dashboard
+- target:
+    kind: ClusterRoleBinding
+    name: grafana-cluster-monitoring-view
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-dashboard-cluster-monitoring-view
+    - op: replace
+      path: /subjects/0/namespace
+      value: grafana-app-dashboard
+- target:
+    kind: Group
+    name: namespace-admins
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-dashboard-admins
+- target:
+    kind: Group
+    name: namespace-users
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-dashboard-users
+- target:
+    kind: RoleBinding
+    name: namespace-admins-rb
+  patch: |-
+    - op: replace
+      path: /subjects/0/name
+      value: grafana-app-dashboard-admins
+- target:
+    kind: RoleBinding
+    name: namespace-users-rb
+  patch: |-
+    - op: replace
+      path: /subjects/0/name
+      value: grafana-app-dashboard-users
+
+...
+
+----
+<1> change namespace name
+<2> Change the prefix "grafana-app-dashboard" of all values to match your new namespace name
 
 
 == Pull secret
