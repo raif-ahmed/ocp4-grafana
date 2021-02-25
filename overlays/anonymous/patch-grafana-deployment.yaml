@@ -1,0 +1,25 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: grafana
+spec:
+  template:
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          #image: registry.redhat.io/openshift4/ose-grafana:v4.6
+          volumeMounts:
+            - mountPath: /etc/grafana/dashboards
+              name: dashboards
+            #   subPath: pvc.json
+            # - mountPath: /etc/grafana/dashboards/pod-containers.json
+            #   name: dashboard-pod-containers
+            #   subPath: pod-containers.json
+            # - mountPath: /etc/grafana/dashboards/amq.json
+            #   name: dashboard-amq
+            #   subPath: amq.json
+      volumes:
+        - name: dashboards
+          configMap:
+            name: dashboards

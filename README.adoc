@@ -24,7 +24,7 @@ To pull images from registry.redhat.io you need to create a pull secret (redhat-
 }
 ----
 
-You need this to pull the image (registry.redhat.io/openshift4/ose-oauth-proxy:latest).
+You need this to pull the image (registry.redhat.io/oauth4/ose-oauth-proxy:latest).
 
 
 Please use https://access.redhat.com/terms-based-registry/[] to create the Registry Service Accounts for the pull secret.
@@ -74,9 +74,9 @@ The command returns a JSON file like.
 }
 ----
 
-then modify xref:overlays/openshift/kustomization.yaml[overlays/openshift/kustomization.yaml], like following example
+then modify xref:overlays/oauth/kustomization.yaml[overlays/oauth/kustomization.yaml], like following example
 
-.xref:overlays/openshift/kustomization.yaml[overlays/openshift/kustomization.yaml]
+.xref:overlays/oauth/kustomization.yaml[overlays/oauth/kustomization.yaml]
 [source,yaml]
 ----
 configMapGenerator:
@@ -89,7 +89,7 @@ configMapGenerator:
 == Connect to Thanos
 We need to connect Grafana to the cluster monitoring Thanos instance in the openshift-monitoring namespace.
 
-For this reason we defined a grafana-config configmap containing the details for a datasource which includes authentication token. 
+For this reason we defined a grafana-config configmap containing the details for a datasource which includes authentication token.
 
 .xref:base/grafana/grafana-config-cm.yaml[base/grafana/grafana-config-cm.yaml]
 [source,yaml]
@@ -161,5 +161,5 @@ To use the Kustomize to deploy the grafana, then
 
 [source,bash]
 ----
-kustomize build overlays/openshift  |oc apply -f -
+kustomize build overlays/oauth  |oc apply -f -
 ----

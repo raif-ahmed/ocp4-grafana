@@ -4,12 +4,26 @@ kind: Kustomization
 generatorOptions:
  disableNameSuffixHash: true
 
+commonLabels:
+  app: grafana
+  app.kubernetes.io/name: grafana
+  app.kubernetes.io/part-of: grafana-app-dashboard
+  app.kubernetes.io/managed-by: kustomize
+
 namespace: grafana-app-dashboard
 
 bases:
 - ../../base
 
 resources:
+  - grafana-svc.yaml
+  - grafana-route.yaml
+  - grafana-deployment.yaml
+  - grafana-sa.yaml
+  - grafana-oauth-config-cm.yaml
+  - oauth/cluster-role.yaml
+  - oauth/cluster-role-binding.yaml
+  #- grafana-anonymous-config-cm.yaml
   - namespace.yaml
   - namespace-groups.yaml
 

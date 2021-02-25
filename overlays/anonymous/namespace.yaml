@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/description: "Grafana Anonymous Dashboard for Application Monotoring"
+    openshift.io/display-name: "Grafana Anonymous Dashboard"
+  name: grafana-app-anonymous-dashboard

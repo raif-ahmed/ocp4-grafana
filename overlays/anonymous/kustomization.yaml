@@ -1,0 +1,97 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+generatorOptions:
+ disableNameSuffixHash: true
+
+commonLabels:
+  app: grafana
+  app.kubernetes.io/name: grafana
+  app.kubernetes.io/part-of: grafana-app-dashboard
+  app.kubernetes.io/managed-by: kustomize
+
+namespace: grafana-app-anonymous-dashboard
+
+bases:
+- ../../base
+
+resources:
+  - grafana-svc.yaml
+  - grafana-route.yaml
+  - grafana-deployment.yaml
+  - grafana-sa.yaml
+  # - grafana-oauth-config-cm.yaml
+  - grafana-anonymous-config-cm.yaml
+  - namespace.yaml
+  - namespace-groups.yaml
+
+configMapGenerator:
+- files:
+    - dashboards/amq.json
+    - dashboards/pod-containers.json
+    - dashboards/pvc.json
+    - dashboards/namespace.json
+  name: dashboards
+# use the field 'issuer' as OAUTH_ISSUER from following command
+# oc run --rm -i -t box --image=registry.redhat.io/ubi8-minimal --restart=Never -- curl https://openshift.default.svc/.well-known/oauth-authorization-server --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+- literals:
+  - OAUTH_ISSUER=https://oauth-openshift.apps.cluster-107d.gcp.testdrive.openshift.com
+  name: oauth-issuer
+- files:
+    - app-rules.yaml
+  name: app-rules
+
+# I'm changing the names to match the namespace name.
+# Please change "grafana-app-dashboard" prefix to match your namespace name
+patches:
+- target:
+    kind: ClusterRoleBinding
+    name: grafana-proxy
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-anonymous-dashboard-proxy
+    - op: replace
+      path: /subjects/0/namespace
+      value: grafana-app-anonymous-dashboard
+- target:
+    kind: ClusterRoleBinding
+    name: grafana-cluster-monitoring-view
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-anonymous-dashboard-cluster-monitoring-view
+    - op: replace
+      path: /subjects/0/namespace
+      value: grafana-app-anonymous-dashboard
+- target:
+    kind: Group
+    name: namespace-admins
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-anonymous-dashboard-admins
+- target:
+    kind: Group
+    name: namespace-users
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: grafana-app-anonymous-dashboard-users
+- target:
+    kind: RoleBinding
+    name: namespace-admins-rb
+  patch: |-
+    - op: replace
+      path: /subjects/0/name
+      value: grafana-app-anonymous-dashboard-admins
+- target:
+    kind: RoleBinding
+    name: namespace-users-rb
+  patch: |-
+    - op: replace
+      path: /subjects/0/name
+      value: grafana-app-anonymous-dashboard-users
+
+patchesStrategicMerge:
+- patch-grafana-deployment.yaml
