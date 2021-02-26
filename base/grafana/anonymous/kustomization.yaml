@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+generatorOptions:
+ disableNameSuffixHash: true
+
+resources:
+- grafana-svc.yaml
+- grafana-route.yaml
+- grafana-deployment.yaml
+- grafana-sa.yaml
+- grafana-anonymous-config-cm.yaml
+- ../common
+
+secretGenerator:
+#  python -c 'import os,base64; print base64.b64encode(os.urandom(16))'
+- literals:
+  - session_secret=vtmFnAI5UgevynW+45kQmg==
+  name: grafana-proxy-secret
+  type: Opaque

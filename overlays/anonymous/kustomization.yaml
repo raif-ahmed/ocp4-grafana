@@ -13,17 +13,13 @@ commonLabels:
 namespace: grafana-app-anonymous-dashboard
 
 bases:
-- ../../base
+- ../../base/grafana/anonymous
+
 
 resources:
-  - grafana-svc.yaml
-  - grafana-route.yaml
-  - grafana-deployment.yaml
-  - grafana-sa.yaml
-  # - grafana-oauth-config-cm.yaml
-  - grafana-anonymous-config-cm.yaml
   - namespace.yaml
   - namespace-groups.yaml
+  - namespace-groups-role-binding.yaml
 
 configMapGenerator:
 - files:

@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+generatorOptions:
+ disableNameSuffixHash: true
+
+resources:
+  - grafana-data-pvc.yaml
+  - monitor/generate-grafana-ds-token-job-sa.yaml
+  - monitor/generate-grafana-ds-token-job-role.yaml
+  - monitor/generate-grafana-ds-token-job-role-binding.yaml
+  - monitor/cluster-monitor-view-role-binding.yaml
+  - monitor/generate-grafana-ds-token-job.yaml
+
+secretGenerator:
+  #https://access.redhat.com/terms-based-registry/
+- name: redhat-pull-secret
+  files:
+    - .dockerconfigjson=redhat-pull-config.json
+  type: kubernetes.io/dockerconfigjson
