@@ -1,6 +1,6 @@
 = README
 
-This is a deployment of Grafana on OpenShift 4.
+This is a deployment of Grafana on OpenShift 4. We couldn't use https://github.com/integr8ly/grafana-operator[Grafana Operator] for OpenShift 4 as at the time of writing this blog, it is not supported for disconnected environment. for more info https://access.redhat.com/articles/4740011[Red Hat Operators Supported in Disconnected Mode]
 
 = Grafana integrated with OpenShift OAuth
 
